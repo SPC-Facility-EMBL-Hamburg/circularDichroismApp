@@ -103,9 +103,6 @@ class CdExperimentGeneral:
 
         self.isGenerated = False  # Boolean to help exporting only the generated data
 
-        # List of dataframes containing the secondary structure content, one df per CD spectrum
-        self.secondary_structure_content = None
-
         # Name of the experiment
         self.name = None
 
@@ -353,9 +350,9 @@ class CdExperimentGeneral:
         # Verify that the higher WL >= 240 nm and lower WL <= 190 nm
 
         self.secondary_structure_content = []
-        self.fitted_spectra_sec_str = {}
-        self.query_spectra_sec_str = {}
-        self.lowerWL_sec_str = lower_wl
+        self.fitted_spectra_sec_str      = {}
+        self.query_spectra_sec_str       = {}
+        self.lowerWL_sec_str             = lower_wl
 
         self.currentUnits = self.desiredUnits
 

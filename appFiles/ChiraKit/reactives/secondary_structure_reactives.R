@@ -37,6 +37,8 @@ observeEvent(input$runSecStrEstimation,{
   
   reactives$secStrFittingWasDone <- FALSE
 
+  output[['secondary_structure']] <- NULL
+
   withBusyIndicatorServer("hiddenBtnSecStr",{
     
     expNames <- cdAnalyzer$experimentNames

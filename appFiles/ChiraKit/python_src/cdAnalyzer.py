@@ -1750,7 +1750,7 @@ class CdExperimentThermalRamp(CdExperimentFittingModel):
             if key in model.lower():
                 t1_max += value
 
-        low_bound = np.array([t1_min, 10, t1_min + 10, 10] + [x / 25 if x > 0 else x * 25 for x in p0[4:]])
+        low_bound = np.array([t1_min, 5, t1_min + 10, 5]  + [x / 25 if x > 0 else x * 25 for x in p0[4:]])
         high_bound = np.array([t1_max, 1000, t1_max, 1000] + [x * 25 if x > 0 else x / 25 for x in p0[4:]])
 
         # Expand boundaries for the intermediate signal
@@ -1820,7 +1820,7 @@ class CdExperimentThermalRamp(CdExperimentFittingModel):
             t1_init, t2_init = df['t1'][idx], df['t2'][idx]
             p0[0], p0[2] = t1_init, t2_init
 
-            low_bound[0], low_bound[2] = t1_init - 30, t2_init - 30
+            low_bound[0], low_bound[2]   = t1_init - 30, t2_init - 30
             high_bound[0], high_bound[2] = t1_init + 30, t2_init + 30
 
         global_fit_params, cov = fit_thermal_unfolding_three_species(self.xAxis_lst, self.signal_lst, p0,

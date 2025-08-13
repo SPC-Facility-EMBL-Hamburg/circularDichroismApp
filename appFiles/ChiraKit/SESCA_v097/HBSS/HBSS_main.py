@@ -36,7 +36,7 @@ Usage = usage0 + usage + usage0
 
 #Specify HBSS files and directories here:
 ##################################################################################
-HBSS_dir =  "/home/os/spc_shiny_servers/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/HBSS"
+HBSS_dir =  "/home/os/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/HBSS"
 HBSS_prep = os.path.join(HBSS_dir,"HBSS_prep.py")
 HBSS_basic = os.path.join(HBSS_dir,"HBSS_basic.py") 
 HBSS_extend =  os.path.join(HBSS_dir,"HBSS_extend.py")

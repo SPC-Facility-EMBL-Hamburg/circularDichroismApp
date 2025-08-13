@@ -4,12 +4,6 @@ stopifnot("reticulate" %in% installed.packages()[,"Package"])
 install.packages("tidyverse",repos = "http://cran.us.r-project.org")
 stopifnot("tidyverse" %in% installed.packages()[,"Package"])
 
-install.packages("FactoMineR",repos = "http://cran.us.r-project.org")
-stopifnot("FactoMineR" %in% installed.packages()[,"Package"])
-
-install.packages("factoextra",repos = "http://cran.us.r-project.org")
-stopifnot("factoextra" %in% installed.packages()[,"Package"])
-
 install.packages("shiny",repos = "http://cran.us.r-project.org")
 stopifnot("shiny" %in% installed.packages()[,"Package"])
 
@@ -48,6 +42,3 @@ stopifnot("signal" %in% installed.packages()[,"Package"])
 
 install.packages("ggdendro",repos = "http://cran.us.r-project.org")
 stopifnot("ggdendro" %in% installed.packages()[,"Package"])
-
-install.packages("quadprog",repos = "http://cran.us.r-project.org")
-stopifnot("quadprog" %in% installed.packages()[,"Package"])

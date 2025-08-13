@@ -29,7 +29,7 @@ Usage = usage0 + usage + usage0
 #############################################
 #these parameters should be changed on installation:
 win = 0
-dssp_main = "/home/os/spc_shiny_servers/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/DSSP/dssp-2.0.4-linux-amd64"
+dssp_main = "/home/os/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/DSSP/dssp-2.0.4-linux-amd64"
 #dssp_main = "/home/gnagy/Programs/SESCA_dev/DSSP/dssp-2.0.4-linux-amd64"
 #dssp_main = "D:\\tan/Gottingen/Programs/SESCA_dev/DSSP/dssp-2.0.4-win32.exe"
 #dssp_main = "/usr/local/bin/dssp"

@@ -36,7 +36,7 @@ Usage = usage0 + usage + usage0
 #################################################
 #1- use windows mode, 0- use unix mode
 win = 0
-SESCA_Dir =     "/home/os/spc_shiny_servers/circularDichroismApp/appFiles/ChiraKit/SESCA_v097"
+SESCA_Dir =     "/home/os/circularDichroismApp/appFiles/ChiraKit/SESCA_v097"
 #SESCA_Dir =      "D:\\tan\Gottingen\Programs\SESCA_dev"
 #SESCA_Dir =      "/home/gnagy/Programs/SESCA_dev"
 SESCA_scripts =  os.path.join(SESCA_Dir,"scripts")

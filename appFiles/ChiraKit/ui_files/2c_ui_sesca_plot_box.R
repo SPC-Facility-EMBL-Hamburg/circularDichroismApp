@@ -1,5 +1,20 @@
 box(title = "Plotting options", width = 12, solidHeader = T, status = "primary",
 
+    conditionalPanel('input.secStr_analysis_mode == "SESCA_pred"',
+
+        conditionalPanel('input.sescaReference != "None"',
+
+            fluidRow(
+
+                column(3, p(HTML("<b>Ref. label</b>"),
+                    textInput("sesca_pred_ref_name", NULL,'reference')))
+
+            )
+
+        )
+
+    ),
+
     fluidRow(
 
         column(3, p(HTML("<b>File type</b>"),
@@ -23,6 +38,23 @@ box(title = "Plotting options", width = 12, solidHeader = T, status = "primary",
 
         column(3, p(HTML("<b>Text size</b>"),
                     numericInput('sesca_axis_size',NULL, 16,min = 4, max = 40)))
+
+    ),
+
+    conditionalPanel('input.secStr_analysis_mode == "SESCA_pred"',
+
+        fluidRow(
+
+            column(3, p(HTML("<b>Show X-grid</b>"),checkboxInput('sesca_show_x_grid',NULL, value = TRUE))),
+            column(3, p(HTML("<b>Show Y-grid</b>"),checkboxInput('sesca_show_y_grid',NULL, value = TRUE))),
+
+            column(3, p(HTML("<b>Marker size</b>"),
+                numericInput('sesca_marker_size',NULL, value = 2,min=1, max = 10,step=0.25))),
+
+            column(3, p(HTML("<b>Line width</b>"),
+                numericInput('sesca_line_width',NULL, value = 1,min=1, max = 10,step=0.2)))
+
+        )
 
     ),
 

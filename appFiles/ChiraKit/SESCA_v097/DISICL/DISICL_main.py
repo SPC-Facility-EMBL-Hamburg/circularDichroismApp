@@ -119,7 +119,7 @@ libhelp = lib0+lib1+lib2+lib3+lib4+lib5+lib6+lib7+lib8+lib9+lib10+lib11+lib2+lib
 win = 0
 # 0 = use linux format, 1 = assume windows format
 #Set main DISICL path and library path for DISICL
-DISICL_dir =  "/home/os/spc_shiny_servers/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/DISICL"
+DISICL_dir =  "/home/os/circularDichroismApp/appFiles/ChiraKit/SESCA_v097/DISICL"
 libs = os.path.join(DISICL_dir,"libs")
 
 ######Nothing should be modified from this point, apply changes at your own risk####### 

@@ -27,7 +27,7 @@ Usage = usage0 + usage + usage0
 
 #Specify SESCA files and directories here:
 #################################################
-SESCA_Dir =     "/home/os/spc_shiny_servers/circularDichroismApp/appFiles/ChiraKit/SESCA_v097"
+SESCA_Dir =     "/home/os/circularDichroismApp/appFiles/ChiraKit/SESCA_v097"
 SESCA_scripts =  os.path.join(SESCA_Dir,"scripts")
 ##################################################
 #the code from here should not be changed

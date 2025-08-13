@@ -86,10 +86,18 @@ observeEvent(input$runSESCA,{
             popUpInfo("The SESCA algorithm is running. This may take a few minutes.")
             sescaPyClass$predict(pdb_paths,pdb_names,basisSet)
             Sys.sleep(0.2)
-            output$sesca_plot <- renderPlotly({sesca_plot(sescaPyClass,input$sesca_plot_width,
-                                                          input$sesca_plot_height,input$sesca_plot_type,
-                                                          input$sesca_axis_size,
-                                                          average_ensemble = input$sescaAverageEnsemble)})
+            output$sesca_plot <- renderPlotly({sesca_plot(
+                sescaPyClass,
+                input$sesca_plot_width,
+                input$sesca_plot_height,
+                input$sesca_plot_type,
+                input$sesca_axis_size,
+                showGridX= input$sesca_show_x_grid,
+                showGridY= input$sesca_show_y_grid,
+                markerSize = input$sesca_marker_size,
+                lineWidth = input$sesca_line_width,
+                average_ensemble = input$sescaAverageEnsemble)})
+
             output$sesca_comparison_stats <- NULL
 
         } else {
@@ -118,9 +126,24 @@ observeEvent(input$runSESCA,{
                 ref_name <- paste0(ref_name," (scaled by ",scaling_factor,")")
             }
 
+            # Update the textInput sesca_pred_ref_name with the ref name
+            updateTextInput(session, "sesca_pred_ref_name", value = ref_name)
+
             output$sesca_plot <- renderPlotly({sesca_plot(
-              sescaPyClass,input$sesca_plot_width,input$sesca_plot_height,input$sesca_plot_type, input$sesca_axis_size,
-              wavelength_ref,signal_ref,ref_name,input$sescaAverageEnsemble)})
+
+              sescaPyClass,
+              input$sesca_plot_width,
+              input$sesca_plot_height,
+              input$sesca_plot_type,
+              input$sesca_axis_size,
+              wavelength_ref,
+              signal_ref,
+              input$sesca_pred_ref_name,
+              showGridX= input$sesca_show_x_grid,
+              showGridY= input$sesca_show_y_grid,
+              markerSize = input$sesca_marker_size,
+              lineWidth = input$sesca_marker_size,
+              average_ensemble=input$sescaAverageEnsemble)})
 
             output$sesca_comparison_stats <- renderTable({sescaPyClass$comparison_stats},options = list(scrollX = TRUE))
         }

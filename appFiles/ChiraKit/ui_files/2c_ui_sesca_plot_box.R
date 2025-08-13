@@ -49,10 +49,10 @@ box(title = "Plotting options", width = 12, solidHeader = T, status = "primary",
             column(3, p(HTML("<b>Show Y-grid</b>"),checkboxInput('sesca_show_y_grid',NULL, value = TRUE))),
 
             column(3, p(HTML("<b>Marker size</b>"),
-                numericInput('sesca_marker_size',NULL, value = 2,min=1, max = 10,step=0.25))),
+                numericInput('sesca_marker_size',NULL, value = 4,min=0.5, max = 10,step=0.25))),
 
             column(3, p(HTML("<b>Line width</b>"),
-                numericInput('sesca_line_width',NULL, value = 1,min=1, max = 10,step=0.2)))
+                numericInput('sesca_line_width',NULL, value = 1,min=0.2, max = 10,step=0.2)))
 
         )
 

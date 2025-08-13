@@ -142,7 +142,7 @@ observeEvent(input$runSESCA,{
               showGridX= input$sesca_show_x_grid,
               showGridY= input$sesca_show_y_grid,
               markerSize = input$sesca_marker_size,
-              lineWidth = input$sesca_marker_size,
+              lineWidth = input$sesca_line_width,
               average_ensemble=input$sescaAverageEnsemble)})
 
             output$sesca_comparison_stats <- renderTable({sescaPyClass$comparison_stats},options = list(scrollX = TRUE))

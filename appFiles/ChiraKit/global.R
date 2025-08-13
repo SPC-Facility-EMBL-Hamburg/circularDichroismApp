@@ -1,6 +1,6 @@
 packages <- c("shinydashboard","shinycssloaders","rhandsontable","plotly",
               "shinyalert","reticulate","DT","reshape2","tidyverse",
-              "colourpicker",'signal','ggdendro','factoextra','FactoMineR')
+              "colourpicker",'signal','ggdendro')
 
 invisible(lapply(packages, library, character.only = TRUE))
 

@@ -3,7 +3,8 @@ options(stringsAsFactors = F)
 
 # List of Python script files to source
 py_scripts <- c("cdAnalyzer.py","helpers.py","decomposition_helpers.py",
-                "fitting_helpers.py","get_dssp_summary.py","sesca_helpers.py")
+                "fitting_helpers.py","get_dssp_summary.py","sesca_helpers.py",
+                "read_references_to_matrices.py")
 
 # Source the Python helper functions 
 for (script in py_scripts) {source_python(paste0('python_src/', script))}

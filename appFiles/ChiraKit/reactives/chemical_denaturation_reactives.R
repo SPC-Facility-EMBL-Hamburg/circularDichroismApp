@@ -86,6 +86,9 @@ observeEvent(list(input$legendInfo,input$workingUnits,input$oligomeric_state_che
   
   df <- df[df$CD_curve %in% internalID_to_keep,]
 
+  # Include a boolean column to select which curve to use
+  df$Select <- TRUE
+
   # Assign the created dataframe to the Table chemical_denaturation_conc (available at the 2b. Chemical unfolding Tab)
   output$chemical_denaturation_conc <- renderRHandsontable({
     rhandsontable(df,rowHeaders=NULL)    %>% 
@@ -106,7 +109,10 @@ observeEvent(input$btn_create_chemical_dataset,{
   
   # Retrieve which CD experiments should be used to build a new dataset for chemical denaturation
   df_ids2find        <- hot_to_r(input$chemical_denaturation_conc)
- 
+
+  # Keep only rows with Select == TRUE
+  df_ids2find        <- df_ids2find[df_ids2find$Select,]
+
   we_have_nas1 <- sum(is.na(as.numeric(df_ids2find[,2]))) > 0
   we_have_nas2 <- sum(is.na(as.numeric(df_ids2find[,3]))) > 0
   
@@ -507,11 +513,13 @@ observeEvent(input$btn_decompose_spectra_chemical,{
   reactives$spectra_was_decomposed_chemical <- NULL
   
   chemical_exps <- cdAnalyzer$experimentNamesChemical
-  
+
+  delta_explained_variance <- 1
+
   if (length(chemical_exps) == 0) return(NULL)
   
   explained_variance_threshold <- input$explained_variance_threshold_chemical
-  
+
   # vector to store the number of useful components
   ks <- c()
   for (exp in chemical_exps) {
@@ -530,7 +538,13 @@ observeEvent(input$btn_decompose_spectra_chemical,{
       return(NULL)
       
     }
-    
+
+    # Extract the explained variance - useful to set the numericInput step for the explained_variance_threshold_chemical
+    explained_variance_i <- cdAnalyzer$experimentsChemical[[exp]]$explained_variance
+    desired_n <- min(length(explained_variance_i),4)
+    delta_explained_variance_i <- explained_variance_i[desired_n] - explained_variance_i[desired_n-1]
+    delta_explained_variance <- min(delta_explained_variance,delta_explained_variance_i)
+
     cdAnalyzer$experimentsChemical[[exp]]$filter_basis_spectra(explained_variance_threshold)
     cdAnalyzer$experimentsChemical[[exp]]$align_basis_spectra_and_coefficients()
     cdAnalyzer$experimentsChemical[[exp]]$reconstruct_spectra()
@@ -548,7 +562,14 @@ observeEvent(input$btn_decompose_spectra_chemical,{
                                   '. Explained variance threshold: ',explained_variance_threshold))
   
   updateNumericInput(session,'selectedK_chemical',NULL,min(ks),1,min(ks))
-  
+
+  updateNumericInput(
+    session,'explained_variance_threshold_chemical',
+    label=NULL,
+    value=explained_variance_threshold,
+    step=round(delta_explained_variance,3),
+    min=5,max=100)
+
   reactives$spectra_was_decomposed_chemical <- TRUE
   
 })

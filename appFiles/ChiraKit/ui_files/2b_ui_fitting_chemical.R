@@ -59,13 +59,15 @@ box(title = "2. Fitting", width = 12, solidHeader = T, status = "primary",
         column(3,p(
           HTML("<b>2d. Variance threshold</b>"),
           span(shiny::icon("info-circle"), id = "info_uuVarianceThreshold"),
-          numericInput("explained_variance_threshold_chemical",NULL,99,50,100),
+          numericInput("explained_variance_threshold_chemical",label=NULL,value=99,min=5,max=100,step=0.1),
           tippy::tippy_this(
             elementId = "info_uuVarianceThreshold",
             tooltip = "Modify the explained variance threshold to 
             determine how many basic spectra to use. 
             For SVD, we use the raw data variance. 
-            For PCA, we use the variance of the centered data.",placement = "right")
+            For PCA, we use the variance of the centered data.
+            You can use the arrows or type the value directly.
+            ",placement = "right")
           
         )),
         
@@ -79,7 +81,7 @@ box(title = "2. Fitting", width = 12, solidHeader = T, status = "primary",
             actionButton("btn_change_basis_chemical","Change basis",class = "btn-primary"),
             tippy::tippy_this(
               elementId = "info_uuChangeBasisChemical",
-              tooltip   = "Optional step. Combine the first and second basis spectra to create
+              tooltip   = "Optional step. Combine the first two/three basis spectra to create
               a new set of basis spectra. Afterwards, the new first basis spectrum will
               be similar to the first acquired spectra.",placement = "right")
             

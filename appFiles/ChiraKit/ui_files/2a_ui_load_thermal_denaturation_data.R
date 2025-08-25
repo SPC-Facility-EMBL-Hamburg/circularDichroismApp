@@ -4,7 +4,7 @@ box(title = "1. Temperature data", width = 12, solidHeader = T, status = "primar
       conditionalPanel(
         "input.inputMode != 'thermalUnfolding'",
       
-        column(8,p(
+        column(7,p(
           HTML("<b>Oligomeric state</b>"),
           span(shiny::icon("info-circle"), id = "ui_oligomeric_state_term"),
           selectInput('oligomeric_state_term',NULL,
@@ -20,6 +20,18 @@ box(title = "1. Temperature data", width = 12, solidHeader = T, status = "primar
             placement = "right")
           
         )),
+
+        # Slider input for the temperature range
+        column(5,p(
+          HTML("<b>Temperature range</b>"),
+          span(shiny::icon("info-circle"), id = "ui_temperature_range"),
+          sliderInput('temperature_range', NULL,
+                      min = 0, max = 110, value = c(5, 95), step = 1,
+                      post = " °C", width = '100%'),
+          tippy::tippy_this(
+            elementId = "ui_temperature_range",
+            tooltip = "Select the temperature range of interest. The table below will update automatically",
+            placement = "right"))),
 
         column(width = 12,rHandsontableOutput('thermal_denaturation_data'))
         )

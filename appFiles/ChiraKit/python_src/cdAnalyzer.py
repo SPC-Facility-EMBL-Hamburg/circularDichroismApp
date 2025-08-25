@@ -1,6 +1,7 @@
 import copy, sys, warnings
 
 import pandas as pd
+import numpy as np
 
 from loadCDfilesHelpers    import *
 from helpers               import *
@@ -23,8 +24,8 @@ Code written by Osvaldo Burastero
 
 If you use this script please use a reference similar to the following:
 
-Osvaldo Burastero, Nykola C. Jones, Søren Vrønning Hoffmann, & Maria M. Garcia-Alai (2024). 
-ChiraKit (Version 1.0). Manuscript in preparation. https://spc.embl-hamburg.de/app/chirakit
+Burastero, O., Jones, N. C., Defelipe, L. A., Zavrtanik, U., Hadži, S., Hoffmann, S. V., & Garcia-Alai, M. M. (2025). 
+ChiraKit: an online tool for the analysis of circular dichroism spectroscopy data. Nucleic Acids Research, gkaf350.
 
 No warranty whatsoever
 If you have questions please contact me:    oburastero@gmail.com

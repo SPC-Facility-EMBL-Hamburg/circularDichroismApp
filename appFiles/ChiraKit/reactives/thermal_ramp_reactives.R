@@ -172,6 +172,13 @@ observeEvent(list(input$legendInfo,input$workingUnits,input$oligomeric_state_ter
 
   if (nrow(df) == 0) return(NULL)
 
+  # Include a boolean column to select which curve to use
+  # We want temperatures between the selected range from the sliderInput temperature_range
+  min_temp <- input$temperature_range[1]
+  max_temp <- input$temperature_range[2]
+
+  df$Select <- df[,2] >= min_temp & df[,2] <= max_temp
+
   # Assign the created dataframe to the Table thermal_denaturation_data (available at the 2a. Thermal analysis Tab)
   output$thermal_denaturation_data <- renderRHandsontable({
     rhandsontable(df,rowHeaders=NULL)    %>% 
@@ -179,6 +186,30 @@ observeEvent(list(input$legendInfo,input$workingUnits,input$oligomeric_state_ter
       hot_table(stretchH='all')
   })
   
+})
+
+# Automatic update of the thermal_denaturation_data Table when changing the sliderInput temperature_range
+observeEvent(input$temperature_range,{
+
+  req(reactives$data_loaded)
+  req(input$thermal_denaturation_data)
+
+  df <- hot_to_r(input$thermal_denaturation_data)
+
+  if (nrow(df) == 0) return(NULL)
+
+  min_temp <- input$temperature_range[1]
+  max_temp <- input$temperature_range[2]
+
+  # The second column is the one with the temperature data
+  df$Select <- df[,2] >= min_temp & df[,2] <= max_temp
+
+  output$thermal_denaturation_data <- renderRHandsontable({
+    rhandsontable(df,rowHeaders=NULL)    %>%
+      hot_col(col = c(1), readOnly=TRUE) %>%
+      hot_table(stretchH='all')
+  })
+
 })
 
 observeEvent(input$btn_create_thermal_dataset,{
@@ -193,7 +224,10 @@ observeEvent(input$btn_create_thermal_dataset,{
   # Retrieve which CD experiments should be used to build
   # a new dataset for thermal denaturation
   df_ids2find        <- hot_to_r(input$thermal_denaturation_data)
-  
+
+  # Leave only rows where the column 'Select' is TRUE
+  df_ids2find        <- df_ids2find[df_ids2find$Select,]
+
   # Reassign the column name
   idx <- which(grepl('Temperature',colnames(df_ids2find)))
   colnames(df_ids2find)[idx] <- 'Temperature'
@@ -605,7 +639,9 @@ observeEvent(input$btn_decompose_spectra,{
   reactives$spectra_was_decomposed <- NULL
   
   thermal_exps <- cdAnalyzer$experimentNamesThermal
-  
+
+  delta_explained_variance <- 1
+
   if (length(thermal_exps) == 0) return(NULL)
   
   explained_variance_threshold <- input$explained_variance_threshold
@@ -628,7 +664,13 @@ observeEvent(input$btn_decompose_spectra,{
       return(NULL)
       
     }
-    
+
+    # Extract the explained variance - useful to set the numericInput step for the explained_variance_threshold
+    explained_variance_i <- cdAnalyzer$experimentsThermal[[exp]]$explained_variance
+    desired_n <- min(length(explained_variance_i),4)
+    delta_explained_variance_i <- explained_variance_i[desired_n] - explained_variance_i[desired_n-1]
+    delta_explained_variance <- min(delta_explained_variance,delta_explained_variance_i)
+
     cdAnalyzer$experimentsThermal[[exp]]$filter_basis_spectra(explained_variance_threshold)
     cdAnalyzer$experimentsThermal[[exp]]$align_basis_spectra_and_coefficients()
     cdAnalyzer$experimentsThermal[[exp]]$reconstruct_spectra()
@@ -646,7 +688,15 @@ observeEvent(input$btn_decompose_spectra,{
   append_record_to_logbook(paste0("Decomposing the CD spectra",
                                   '. Method: ',reactives$spectra_decomposition_method_thermal,
                                   '. Explained variance threshold: ',explained_variance_threshold))
-  
+
+  updateNumericInput(
+    session,'explained_variance_threshold',
+    label=NULL,
+    value = explained_variance_threshold,
+    step  = round(delta_explained_variance,3),
+    min   = 5,
+    max   = 100)
+
   reactives$spectra_was_decomposed <- TRUE
   
 })

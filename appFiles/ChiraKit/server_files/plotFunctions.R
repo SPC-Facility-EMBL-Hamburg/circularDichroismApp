@@ -4,7 +4,7 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
                               plot_width,plot_height,plot_type,axis_size,
                               legends,colorPalette,sels,useMilliDeg = FALSE,
                               fig=NULL,showGridX=FALSE,showGridY=FALSE) {
-  
+
   # Initialize the plot
   if (is.null(fig)) fig <- plot_ly()
   
@@ -16,7 +16,7 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
   } else {
     signalsAll      <- cdAnalyzer$get_experiment_properties_modif('signalDesiredUnit')
   }
-  
+
   wlsAll          <- cdAnalyzer$get_experiment_properties_modif('wavelength')
   spectraNamesAll <- cdAnalyzer$get_experiment_properties_modif('spectraNames')
 
@@ -27,7 +27,7 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
   nPointsPerExp   <- unlist(lapply(signalsAll, function(x) ncol(x) * nrow(x)))
   nPoints         <- sum(nPointsPerExp,na.rm = T) 
   reducePoints    <- nPoints > 4000 
-  
+
   counter <- 0
   i       <- 0
   
@@ -46,7 +46,7 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
     
     c1 <- all(is.na(signals))
     c2 <- isFake[i] & (fakeExperimentSignal[i] != workingUnits)
-      
+
     if (c1 | c2) {
       counter <- counter + length(spectraNamesAll[[i]])
       next
@@ -57,15 +57,16 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
     for (ii in 1:ncol(signals)) {
       counter <- counter + 1
       signal  <- signals[,ii]
-      
+
       # in place conversion - absorbance to millidegrees
       if (useMilliDeg) signal <- signal * 32980
 
       if (sels[counter]) {
 
         df <- data.frame('wavelength'=wavelength,signal)
+
         df <- df[order(df$wavelength), ]
-        
+
         if (reducePoints) {
           df <- df[seq(1, nrow(df), by = 2), ]
         }
@@ -108,7 +109,7 @@ plotCDexperiments <- function(cdAnalyzer,workingUnits,
   
   fig <- configFig(fig,paste0("CDspectra_",strsplit(as.character(Sys.time())," ")[[1]][1]),
                    plot_type,plot_width,plot_height)
-  
+
   return(fig)
 }
 

@@ -86,6 +86,8 @@ observeEvent(list(input$legendInfo,input$workingUnits,input$oligomeric_state_che
   
   df <- df[df$CD_curve %in% internalID_to_keep,]
 
+  if (nrow(df) == 0) return(NULL)
+
   # Include a boolean column to select which curve to use
   df$Select <- TRUE
 

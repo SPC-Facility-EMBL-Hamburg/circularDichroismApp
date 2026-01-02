@@ -291,7 +291,7 @@ plot_dendogram <- function(distance_matrix,groups,
     geom_text(data = labels, aes(x = x, y = y, label = label),
               size = axis_size / 3.4) +
     coord_flip() + 
-    scale_y_reverse(limits = c(NA,labels$y*2.2)) +
+    scale_y_reverse(limits = c(NA,max(labels$y)*2.2)) +
     theme_classic(base_size = axis_size) +
     labs(title = "Hierarchical Clustering Dendrogram (Ward.D2)", 
          x = "Spectra", y = "Height")+

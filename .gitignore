@@ -2,3 +2,6 @@
 __pycache__
 *.pyc
 .idea/
+
+# MacOS
+.DS_Store

@@ -49,15 +49,7 @@ python3 -m venv /home/${user}/myenv
 /home/${user}/myenv/bin/pip install --prefer-binary --no-cache-dir -r ./appFiles/requirements.txt
 ```
 
-4) Set the correct path for the app
-
-``` bash 
-if [ "$(basename "$(pwd)")" = "circularDichroismApp" ]; then
-    sed -i "0,/base_dir <- paste0/s|base_dir <- paste0.*|base_dir <- paste0('$PWD', '/appFiles/ChiraKit/')|" appFiles/ChiraKit/global.R
-else
-    echo "Change the working directory to circularDichroismApp"
-fi
-```
+4) Set the correct path (variable 'base_dir') for the app by modifying the global.R file
 
 5) Run ChiraKit
 

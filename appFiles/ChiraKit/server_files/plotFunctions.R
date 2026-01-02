@@ -479,20 +479,21 @@ plot_unfolding_exp <- function(unfolding_exp_data,workingUnits,
     } else {
       df_temp$group_var <- df_temp$wavelength
     }
-      
+
     unique_groups <- unique(df_temp$group_var)
     
     for (group_value in unique_groups) {
       
       subset_df <- df_temp[df_temp$group_var == group_value, ]
-      
+
       fig <- add_trace(
         fig,
         x = subset_df$measurement_factor,
         y = subset_df$value,
         type = "scatter",
         mode = "markers",
-        name = group_value
+        name = group_value,
+        showlegend = TRUE
       )
     }
     
@@ -597,7 +598,7 @@ plot_unfolding_fitting <- function(
       
       subset_df     <- df_temp[df_temp$wavelength == group_value, ]
       subset_df_fit <- df_temp_fit[df_temp_fit$wavelength == group_value, ]
-      
+
       fig <- add_trace(
         fig,
         x = subset_df_fit$measurement_factor,
@@ -710,9 +711,7 @@ plot_unfolding_exp_spectra <- function(
   
   i <- 0
   for (leg in unique(unfolding_exp_data$legend)) {
-    
-    fig <- plot_ly()
-    
+
     i   <- i + 1
     
     df_temp <- unfolding_exp_data[unfolding_exp_data$legend == leg,]

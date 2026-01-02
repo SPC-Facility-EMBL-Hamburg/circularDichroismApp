@@ -102,9 +102,6 @@ load_one_experiment <- function(cd_data_file,name,inputUnits = 'millidegrees') {
             l1[[1]]   <- cdAnalyzer$experimentsOri[[name]]$units
         }
 
-        print('here')
-        print(inputUnits)
-
         names(l1) <- c(name)
 
         # Convert to absorbance

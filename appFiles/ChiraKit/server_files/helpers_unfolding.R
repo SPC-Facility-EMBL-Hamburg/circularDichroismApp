@@ -57,7 +57,7 @@ get_signal_dfs_from_selected_spectra <- function(relevantSpectra,cdAnalyzer) {
   for (spectra in relevantSpectra) {
     ids2find <- c(ids2find,which(unlist(internalIDs) == spectra))
   }
-  
+
   # Match the indexes with the indexes of the non-flattened list
   ids                <- found_ids(internalIDs,ids2find)
   
@@ -453,12 +453,12 @@ get_coefficients_df <- function(cdAnalyzer,type='Thermal') {
     
     i        <- i + 1
     coeff    <- py_object[[exp]]$coefficients
-    
+
     if (type == 'Thermal')  {
-      mment_factor <- py_object[[exp]]$temperature
+      mment_factor <- py_object[[exp]]$temperature_ori
       colname2     <- 'Temperature'
     } else if (type == 'Chemical') {
-      mment_factor <- py_object[[exp]]$chem_concentration
+      mment_factor <- py_object[[exp]]$chem_concentration_ori
       colname2     <- 'chem_conc'
     } else {
       mment_factor <- py_object[[exp]]$first_measurement_dimension

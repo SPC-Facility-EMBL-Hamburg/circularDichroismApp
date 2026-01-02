@@ -511,7 +511,6 @@ class CdExperimentFittingModel(CdExperimentGeneral):
         self.signal_useful, self.wavelength_useful = None, None
 
         self.oligo_conc_molar = None  # 1D numpy array, length 'n'
-        self.oligo_conc_lst = None  # 1D list
 
         self.basis_spectra, self.coefficients = None, None
         self.minX, self.maxX = None, None

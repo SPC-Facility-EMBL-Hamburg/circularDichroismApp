@@ -7,11 +7,14 @@ invisible(lapply(packages, library, character.only = TRUE))
 appName     <- "ChiraKit"
 user        <- Sys.info()['user']
 
-reticulate::use_python(paste0("/home/",user,"/myenv/bin/python"), required = TRUE)
-
-# developer path
-base_dir <- paste0("/home/",user,"/spc_shiny_servers/circularDichroismApp/appFiles/",appName,"/")
-
+# Detect if we have macbook or linux
+if (Sys.info()['sysname'] == "Darwin") {
+  reticulate::use_python(paste0("/Users/",user,"/myenv/bin/python"), required = TRUE)
+  base_dir <- paste0("/Users/",user,"/Desktop/arise/circularDichroismApp/appFiles/",appName,"/")
+} else {
+  reticulate::use_python(paste0("/home/",user,"/myenv/bin/python"), required = TRUE)
+  base_dir <- paste0("/home/",user,"/circularDichroismApp/appFiles/",appName,"/")
+}
 
 # path for the docker user
 if (user == 'shiny') {

@@ -1,6 +1,6 @@
 # The ChiraKit app
 
-Last time updated: August 2025 
+Last time updated: January 2026
 
 ## Introduction
 

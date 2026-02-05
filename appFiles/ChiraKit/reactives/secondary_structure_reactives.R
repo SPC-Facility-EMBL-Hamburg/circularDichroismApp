@@ -131,9 +131,10 @@ observeEvent(input$runSecStrEstimation,{
         for (i in 1:length(spectraNames)) {
           
           counter <-  counter + 1
-          
-          sec_str_df     <- data.frame(secondary_structure_content_lst[i])
-          
+
+          py_df <- secondary_structure_content_lst[[i]]
+          sec_str_df <- pandas_to_r(py_df)
+
           method                   <- strsplit(colnames(sec_str_df)[1],'Component_')[[1]][2]
           colnames(sec_str_df)[1]  <- 'Component'
           
@@ -225,8 +226,10 @@ observeEvent(input$pdbFiles,{
       f    <- cd_data_files[i]
       name <- remove_file_extension(names[i])
       
-      df <- run_dssp_workflow(f)
-      
+      py_df <- run_dssp_workflow(f)
+
+      df <- pandas_to_r(py_df)
+
       if (!is.null(df)) {
         
         reactives$secStrCalcWasDone <- TRUE

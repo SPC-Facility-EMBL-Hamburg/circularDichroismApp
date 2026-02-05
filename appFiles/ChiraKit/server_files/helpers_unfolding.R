@@ -1,3 +1,19 @@
+pandas_to_r <- function(py_df) {
+
+    cols <- py_df$columns$to_list()
+
+    # Convert each column properly
+    r_list <- lapply(cols, function(col) {
+        as.vector(py_df[[col]]$to_numpy())
+    })
+
+    # Make data.frame and assign names
+    r_df <- as.data.frame(r_list)
+    names(r_df) <- cols
+
+    return(r_df)
+}
+
 # Useful scripts to process the unfolding datasets (thermal and chemical)
 # and also to process the 'custom' datasets
 
@@ -350,11 +366,13 @@ get_fitted_params_unfolding <- function(cdAnalyzer,type='Thermal',errors=FALSE) 
     i  <- i + 1
     if (errors) {
       
-      df <- py_object[[exp]]$fit_rel_errors
+      py_df <- py_object[[exp]]$fit_rel_errors
+
     } else {
-      df <- py_object[[exp]]$fit_params
+      py_df <- py_object[[exp]]$fit_params
     }
-    
+
+    df <- pandas_to_r(py_df)
     dfs[[i]] <- df
     
   }
@@ -386,7 +404,9 @@ get_fitting_bounds_unfolding <- function(cdAnalyzer,type='Thermal') {
   i <- 0
   for (exp in exps) {
     i  <- i + 1
-    df <- py_object[[exp]]$bounds_df
+    py_df <- py_object[[exp]]$bounds_df
+
+    df <- pandas_to_r(py_df)
     dfs[[i]] <- df
     
   }

@@ -182,7 +182,8 @@ class CdExperimentGeneral:
             "jasco_simple": read_jasco_single_sample_csv,
             "chirakit_txt_with_header": read_chirakit_txt_data,
             "ChirascanFileTemperatureRamp": read_chirascan_file_data_thermal_ramp,
-            "jasco_thermal_ramp": read_jasco_thermal_ramp
+            "jasco_thermal_ramp": read_jasco_thermal_ramp,
+            "jasco_simple_thermal_ramp": read_jasco_simple_thermal_ramp
         }
 
         read_metadata_function_dict = {
@@ -196,14 +197,15 @@ class CdExperimentGeneral:
             "jasco_simple": read_jasco_single_meta_data,
             "chirakit_txt_with_header": read_chirakit_txt_meta_data,
             "ChirascanFileTemperatureRamp": read_chirascan_file_meta_data,
-            "jasco_thermal_ramp": read_jasco_single_meta_data
+            "jasco_thermal_ramp": read_jasco_single_meta_data,
+            "jasco_simple_thermal_ramp": read_jasco_single_meta_data
         }
 
         # Read the metadata
         self.metadata = read_metadata_function_dict[file_type](file)
 
         # If the file is of type Chirascan temperature ramp, assign spectra names based on temperature
-        if file_type in ['ChirascanFileTemperatureRamp','jasco_thermal_ramp']:
+        if file_type in ['ChirascanFileTemperatureRamp','jasco_thermal_ramp','jasco_simple_thermal_ramp']:
 
             self.wavelength, self.signalInput, self.temperature, self.signalHT = read_data_function_dict[file_type](
                 file)

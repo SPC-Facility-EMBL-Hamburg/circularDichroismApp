@@ -74,10 +74,28 @@ observeEvent(input$runSESCA,{
     pdb_names  <- input$pdbFilesSESCA$name
 
     # Check if the file is a PDB file
-    if (length(grep(".pdb",pdb_names)) == 0) {
-        popUpWarning("The file(s) must be in PDB format.")
+    if (length(grep(".pdb",pdb_names)) == 0 && length(grep(".cif",pdb_names)) == 0) {
+        popUpWarning("The file(s) must be in .pdb or .cif format.")
         return(NULL)
+
     } else {
+
+        # Convert each CIF file to PDB
+        for (i in 1:length(pdb_names)) {
+
+            file_ext <- getFileNameExtension(pdb_names[i])
+
+            if (file_ext == "cif") {
+
+                tmp_pdb <- tempfile(fileext = ".pdb")
+
+                cif_to_pdb(pdb_paths[i],tmp_pdb)
+
+                pdb_paths[i] <- tmp_pdb
+
+            }
+
+        }
 
         basisSet <- input$sescaBasisSet
 
@@ -143,13 +161,22 @@ observeEvent(input$runSESCA,{
               showGridY= input$sesca_show_y_grid,
               markerSize = input$sesca_marker_size,
               lineWidth = input$sesca_line_width,
-              average_ensemble=input$sescaAverageEnsemble)})
+              average_ensemble=input$sescaAverageEnsemble
 
-            output$sesca_comparison_stats <- renderTable({sescaPyClass$comparison_stats},options = list(scrollX = TRUE))
+            )})
+
+
+            comparison_stats <- sescaPyClass$comparison_stats
+            comparison_stats <- pandas_to_r(comparison_stats)
+
+            output$sesca_comparison_stats <- renderTable({comparison_stats},options = list(scrollX = TRUE))
         }
 
+        SS_Comp <- sescaPyClass$SS_Comp
+        SS_Comp <- pandas_to_r(SS_Comp)
+
         output$sesca_sec_str <- renderTable({
-            table <- sescaPyClass$SS_Comp
+            table <- SS_Comp
             colnames(table) <- fix_ss_labels(colnames(table),basisSet)
             return(table)
         })
@@ -212,14 +239,36 @@ observeEvent(input$runSESCA_est,{
             popUpWarning("Please provide a PDB file if you want to take into account the side chain contributions.")
             return(NULL)
         }
-        sescaPyClass$bayes_estimate("sesca_reference.dat",basisSet,input$sescaIterations,input$pdbFileSESCA_est$datapath)
+
+        file_ext <- getFileNameExtension(input$pdbFileSESCA_est$name)
+
+        # convert to PDB if CIF
+        if (file_ext == "cif") {
+
+            tmp_pdb <- tempfile(fileext = ".pdb")
+
+            cif_to_pdb(input$pdbFileSESCA_est$datapath,tmp_pdb)
+
+            pdb_path <- tmp_pdb
+
+        } else {
+
+            pdb_path <- input$pdbFileSESCA_est$datapath
+
+        }
+
+        sescaPyClass$bayes_estimate("sesca_reference.dat",basisSet,input$sescaIterations,pdb_path)
+
     } else {
+
         sescaPyClass$bayes_estimate("sesca_reference.dat",basisSet,input$sescaIterations)
+
     }
 
     popUpSuccess("The SESCA algorithm finished.")
     Sys.sleep(0.1)
     bayes_results <- format_bayes_results(extract_scaling_factor_and_ss_composition('Bayes_est_1.out'))
+    bayes_results <- pandas_to_r(bayes_results)
 
     bayes_results[,'Parameter'] <- fix_ss_labels(bayes_results[,'Parameter'],basisSet)
 
@@ -230,9 +279,15 @@ observeEvent(input$runSESCA_est,{
     output$sesca_sec_str_est <- renderTable({bayes_results})
 
     bin_data <- extract_bin_data('Bayes_est_1.out')
+    bin_data <- pandas_to_r(bin_data)
 
-    output$sesca_plot_bayes <- renderPlotly({plot_heatmap_bayes_posterior(bin_data,input$sesca_bayes_pp_x,input$sesca_bayes_pp_y,
-    input$sesca_plot_sesca_plot_width,input$sesca_plot_height,input$sesca_plot_type,input$sesca_axis_size)})
+    output$sesca_plot_bayes <- renderPlotly({
+        plot_heatmap_bayes_posterior(
+            bin_data,input$sesca_bayes_pp_x,input$sesca_bayes_pp_y,
+            input$sesca_plot_sesca_plot_width,input$sesca_plot_height,
+            input$sesca_plot_type,input$sesca_axis_size
+        )
+    })
 
     reactives$sesca_est_was_run <- TRUE
 

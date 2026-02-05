@@ -1,0 +1,92 @@
+TITLE	temp_spectrum_4
+DATA TYPE	
+ORIGIN	JASCO
+OWNER	
+DATE	24/02/01
+TIME	21:34:17
+SPECTROMETER/DATA SYSTEM	
+LOCALE	1036
+XUNITS	Temperature[C]
+YUNITS	CD [mdeg]
+Y2UNITS	HT [V]
+FIRSTX	    4,0000
+LASTX	   94,0400
+NPOINTS	      46
+XYDATA
+4,0000	-29,1176	295,223
+6,0600	-29,3217	295,577
+8,0600	-29,0102	295,484
+10,0500	-28,9184	295,437
+12,0600	-28,8087	295,167
+14,1000	-28,5928	295,186
+16,1000	-28,1238	295,297
+18,1400	-27,9005	295,248
+20,0700	-27,5133	295,319
+22,1400	-27,6544	295,11
+24,1000	-27,2109	295,17
+26,1200	-27,6693	295,155
+28,1400	-27,4872	295,2
+30,1300	-27,7037	295,322
+32,1200	-27,7225	295,418
+34,1000	-27,546	295,269
+36,1200	-26,3242	295,182
+38,1200	-26,7425	295,472
+40,1300	-26,8853	295,273
+42,1400	-26,5344	295,261
+44,1300	-26,2642	295,25
+46,1200	-26,245	295,147
+
+##### Extended Information
+[Comments]
+Sample name	temp_spectrum_4
+Comment
+User	SB
+Division
+Company	HP Inc.
+
+[Detailed Information]
+Creation date	01/02/2024 21:34
+
+Data array type	Non-linear data array * 2
+Horizontal axis	Temperature [C]
+Vertical axis(1)	CD [mdeg]
+Vertical axis(2)	HT [V]
+Start	4 C
+End	94,04 C
+Data points	46      
+
+[Measurement Information]
+Instrument name	J-1500
+Model name	J-1500
+Serial No.	D072061638
+
+Detector	PM-539
+Detector S/N	D072061638
+  Lock-in amp.	X mode
+  HT volt	Auto
+
+Accessory	PTC-510
+Accessory S/N	E017161763
+  Control sensor	Holder
+  Monitor sensor	Holder
+  Start Mode	Keep target temperature +/-0.10 deg C while 5 seconds
+
+Measurement date	01/02/2024 21:34
+
+Photometric mode	CD, HT
+CD scale	200 mdeg/0.1 dOD
+FL scale	200 mdeg/0.1 dOD
+D.I.T.	1 sec
+Bandwidth	1.00 nm
+Monitor wavelength	222 nm
+Baseline correction	None
+Shutter control	Auto
+
+Concentration	20 umol/L
+Solvent	10 mM Phosphate buffer pH 7.4
+
+Start Temperature	4 C
+Start delay	180 sec
+Stage-1	Target 94 C, Interval 2 C, Ramp rate 2 C/min
+Temp. ramp mode	Halt, wait 20 sec before acquiring data
+

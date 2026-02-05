@@ -56,10 +56,10 @@ box(title = "1. Settings", width = 12, solidHeader = T, status = "primary",
 
             column(4, p(HTML("<b>PDB file </b>"),
                         span(shiny::icon("info-circle"), id = "info_uu_pdbSESCA_est"),
-                        fileInput("pdbFileSESCA_est", NULL,multiple = FALSE,accept = ".pdb"),
+                        fileInput("pdbFileSESCA_est", NULL,multiple = FALSE,accept = c(".pdb",".cif")),
                         tippy::tippy_this(
                           elementId = "info_uu_pdbSESCA_est",
-                          tooltip = "Import the PDB file (extension .pdb) so the side chain correction can be applied.
+                          tooltip = "Import the PDB file (extension . or .cif) so the side chain correction can be applied.
                           Only the sequence information is used!"
                           ,placement = "right")))
 
@@ -95,10 +95,10 @@ box(title = "1. Settings", width = 12, solidHeader = T, status = "primary",
 
       column(4, p(HTML("<b>PDB file(s) </b>"),
                   span(shiny::icon("info-circle"), id = "info_uu_pdbSESCA"),
-                  fileInput("pdbFilesSESCA", NULL,multiple = TRUE,accept = ".pdb"),
+                  fileInput("pdbFilesSESCA", NULL,multiple = TRUE,accept = c(".cif",".pdb")),
                   tippy::tippy_this(
                     elementId = "info_uu_pdbSESCA",
-                    tooltip = "Import the PDB file(s) (extension .pdb) to be used for predicting a CD spectrum."
+                    tooltip = "Import the PDB file(s) (extension .pdb or .cif) to be used for predicting a CD spectrum."
                     ,placement = "right"))),
 
       column(4, p(HTML('<p style="margin-bottom:0px;"><br></p>'),
@@ -188,7 +188,7 @@ box(title = "1. Settings", width = 12, solidHeader = T, status = "primary",
       
       column(4, p(HTML("<b>PDB files </b>"),
                   span(shiny::icon("info-circle"), id = "info_uu_pdbToSecStr"),
-                  fileInput("pdbFiles", NULL,multiple = TRUE),
+                  fileInput("pdbFiles", NULL,multiple = TRUE,accept= c(".pdb",".cif")),
                   tippy::tippy_this(
                     elementId = "info_uu_pdbToSecStr",
                     tooltip = "Compute the secondary structure fractions from PDB/mmCIF files.

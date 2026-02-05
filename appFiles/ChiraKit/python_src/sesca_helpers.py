@@ -203,10 +203,10 @@ def extract_bin_data(file_path):
             read = not len(lines[i+1].strip()) == 0
 
         columns = ss_classes + ['P(bin)']
+
         df      = pd.DataFrame(bin_data, columns=columns).astype(float)
 
         return df
-
 
 class CdSpectraPredictor:
 

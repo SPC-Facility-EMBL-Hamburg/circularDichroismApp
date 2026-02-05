@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
+import csv
+
 """
 Dear dev, 
 
@@ -28,9 +30,35 @@ def file_ends_with_pattern(file_path):
         return False
 
 
+def parse_number(s):
+    """
+    Parse a string as a float, handling:
+    - European decimal (comma)
+    - Optional thousands separators
+    - Standard decimal point
+    """
+    s = str(s).strip()
+
+    # Remove spaces
+    s = s.replace(" ", "")
+
+    # Handle European format with thousands separator
+    # e.g., '1.234,56' -> 1234.56
+    if re.match(r'^\d{1,3}(\.\d{3})*,\d+$', s):
+        s = s.replace('.', '').replace(',', '.')
+    # Handle standard format with comma decimal: '9,99'
+    elif ',' in s and '.' not in s:
+        s = s.replace(',', '.')
+
+    try:
+        return float(s)
+    except ValueError:
+        raise ValueError(f"Cannot convert '{s}' to float")
+
+
 def is_float(element):
     try:
-        float(element)
+        parse_number(element)
         return True
     except ValueError:
         return False
@@ -62,7 +90,7 @@ def column_name_is_important(string):
 
 def are_all_strings_numeric(lst):
     for item in lst:
-        if not all(char.isdigit() or char in [".", "-"] for char in item):
+        if not all(char.isdigit() or char in [".", "-",","] for char in item):
             return False
     return True
 
@@ -70,16 +98,19 @@ def are_all_strings_numeric(lst):
 # Guess if a string contains ',' separated values or ';' separated values
 # Return either ',' or ';'
 def find_delimiter_character(string):
+
     comma_count     = string.count(",")
     semicolon_count = string.count(";")
+    tab_count       = string.count("\t")
 
-    if semicolon_count > comma_count:
+    counts = {
+        ",": comma_count,
+        ";": semicolon_count,
+        "\t": tab_count
+    }
 
-        return ";"
-
-    else:
-
-        return ","
+    # Choose the delimiter with the highest count
+    return max(counts, key=counts.get)
 
 
 def file_is_chirakit_txt_with_header(file):
@@ -90,8 +121,8 @@ def file_is_chirakit_txt_with_header(file):
         # Iterate over all the lines except the last 10. We assume that we need at least 9 data points...
         for i, l in enumerate(ls[:-10]):
 
-            if ("Wavelength_(nm)" in l or "Wavelength (nm)" in l) and any(
-                ["CD_/_" in x for x in l.split()]
+            if ("wavelength_(nm)" in l.lower() or "wavelength (nm)" in l.lower()) and any(
+                ["cd_/_" in x.lower() for x in l.split()]
             ):
 
                 next_line_elements = ls[i + 1].split()
@@ -121,6 +152,8 @@ def file_is_jasco_thermal_ramp(file):
 
             l_split     = l.split(split_str)
 
+            # If
+
             if are_all_strings_numeric(l_split) and len(l_split) > 4:
                 condition0 = True
                 break
@@ -129,6 +162,36 @@ def file_is_jasco_thermal_ramp(file):
 
         condition1 = any([x[0].lower() == "origin" and x[1].lower() == "jasco"      for x in l_split])
         condition2 = any([x[0].lower() == "xunits" and x[1].lower() == "nanometers" for x in l_split])
+
+        if all([condition0, condition1, condition2]):
+            return True
+
+    return False
+
+def file_is_jasco_simple_thermal_ramp(file):
+
+    with open(file, encoding="latin-1") as f:
+
+        ls = f.read().splitlines()
+
+        split_str = find_delimiter_character("".join(ls[:20]))
+
+        condition0 = False
+
+        # Detect if we have a thermal ramp by finding
+        # the presence of numeric columns, but less than 10
+        for l in ls[20:50]:
+
+            l_split     = l.split(split_str)
+
+            if are_all_strings_numeric(l_split) and len(l_split) >= 2 and len(l_split) < 10:
+                condition0 = True
+                break
+
+        l_split = [l.split(split_str) for l in ls[:20]]
+
+        condition1 = any([x[0].lower() == "origin" and "jasco" in x[1].lower()       for x in l_split])
+        condition2 = any([x[0].lower() == "xunits" and "temperature" in x[1].lower() for x in l_split])
 
         if all([condition0, condition1, condition2]):
             return True
@@ -165,23 +228,6 @@ def read_jasco_thermal_ramp(file):
 
         split_str = find_delimiter_character("".join(ls[:20]))
 
-        # Find ydata description
-
-        y_data_init_idx = [
-            i for i, l in enumerate(ls[:20]) if l.split(split_str)[0] == "XUNITS"
-        ][0] + 1
-        y_data_end_idx = [
-            i for i, l in enumerate(ls[:20]) if l.split(split_str)[0] == "FIRSTX"
-        ][0]
-
-        y_data_names = [l.split(split_str)[1] for l in ls[y_data_init_idx:y_data_end_idx]]
-
-        y_data_names_lower = [x.lower() for x in y_data_names]
-
-        # Remove the absorbance data
-        if 'absorbance' in y_data_names_lower[2]:
-            y_data_names = y_data_names[:2]
-
         # Find the first line with the word 'Channel'
         channel_idx1 = [i+15 for i, l in enumerate(ls[15:]) if "Channel" in l][0]
 
@@ -200,23 +246,25 @@ def read_jasco_thermal_ramp(file):
         temperatures = ls[channel_idx1 + 1].split(split_str)
 
         # Remove empty lines
-        temperatures = [x for x in temperatures if x != '']
+        temperatures = [parse_number(x) for x in temperatures if x != '']
 
         # Convert temperatures to numpy array
-        temperatures = np.array(temperatures).astype(float)
-
-        n_temp_points = len(temperatures)
+        temperatures = np.array(temperatures)
 
         # Find the wavelength data, first column
-        wavelength_data = [x.split(split_str)[0] for x in ls[(channel_idx1+2):channel_idx2]]
+        wavelength_data = [parse_number(x.split(split_str)[0]) for x in ls[(channel_idx1+2):channel_idx2]]
 
         # Convert wavelength_data to  numpy array
-        wavelength_data = np.array(wavelength_data).astype(float)
+        wavelength_data = np.array(wavelength_data)
 
         n_wavelength_points = len(wavelength_data)
 
         # Retrieve the CD data
         cd_data = [x.split(split_str)[1:] for x in ls[(channel_idx1+2):channel_idx2]]
+
+        for i in range (len(cd_data)):
+
+            cd_data[i] = [parse_number(x) for x in cd_data[i] if x != '']
 
         # Convert to dataframe and then to numpy array
         cd_df = pd.DataFrame(cd_data)
@@ -227,6 +275,10 @@ def read_jasco_thermal_ramp(file):
 
             # Retrieve the HT data
             ht_data = [x.split(split_str)[1:] for x in ls[(channel_idx2+2):(channel_idx2+2+n_wavelength_points)]]
+
+            for i in range(len(ht_data)):
+
+                ht_data[i] = [parse_number(x) for x in ht_data[i] if x != '']
 
             # Convert to dataframe and then to numpy array
             ht_df     = pd.DataFrame(ht_data)
@@ -239,6 +291,75 @@ def read_jasco_thermal_ramp(file):
 
     return wavelength_data, spectra, temperatures, signal_ht
 
+def read_jasco_simple_thermal_ramp(file):
+
+    """
+    Given a JASCO file with a thermal ramp at only one wavelength, this function reads the data
+
+    XYDATA
+    4,0000	-29,1176	295,223
+    6,0600	-29,3217	295,577
+    8,0600	-29,0102	295,484
+    10,0500	-28,9184	295,437
+    12,0600	-28,8087	295,167
+    14,1000	-28,5928	295,186
+
+
+    Args:
+
+        file (str): path to the file
+
+    """
+
+    with open(file, encoding="latin-1") as f:
+
+        ls = f.read().splitlines()
+
+        split_str = find_delimiter_character("".join(ls[:20]))
+
+        # Find the wavelength
+        line_with_wl_info = [ l for l in ls if "wavelength" in l ][0]
+
+        # Remove all non-numeric characters
+        wavelength_value = re.sub("[^0-9,.-]", "", line_with_wl_info)
+        wavelength_value = np.array([parse_number(wavelength_value)])
+
+        # Find the first line with the word 'XYDATA'
+        idx_start = [ i for i, l in enumerate(ls) if "XYDATA" in l ][0] + 1
+
+        # Find the first empty line or starting with asterisk after idx_start
+        idx_end = [i for i,l in enumerate(ls) if l == '' or l.startswith('*') if i > idx_start][0]
+
+        sel_lines = ls[idx_start:idx_end]
+
+        sel_lines_split = [ l.split(split_str) for l in sel_lines ]
+
+        we_have_ht = len(sel_lines_split[0]) == 3
+
+        temperatures = [parse_number(l[0]) for l in sel_lines_split]
+        temperatures = np.array(temperatures)
+
+        cd_data = [parse_number(l[1]) for l in sel_lines_split]
+        cd_data = np.array(cd_data).reshape(1,-1)
+
+        if we_have_ht:
+
+            # Retrieve the HT data
+            ht_data = [parse_number(l[2]) for l in sel_lines_split]
+            ht_data = np.array(ht_data).reshape(1,-1)
+
+            # Convert to dataframe and then to numpy array
+            ht_df     = pd.DataFrame(ht_data)
+            signal_ht = np.array(ht_df.iloc[:, :]).astype(float)
+
+        else:
+
+            signal_ht    = np.empty_like(cd_data)
+            signal_ht[:] = np.nan
+
+    return wavelength_value, cd_data, temperatures, signal_ht
+
+
 def file_is_jasco_single_sample_csv(file):
     with open(file, encoding="latin-1") as f:
 
@@ -248,22 +369,30 @@ def file_is_jasco_single_sample_csv(file):
 
             l_semicolon_split = l.split(";")
             l_comma_split = l.split(",")
+            l_tab_split = l.split("\t")
 
             condition1 = (
                 l_semicolon_split[0].lower() == "origin"
                 and l_semicolon_split[1].lower() == "jasco"
             )
+
             condition2 = (
                 l_comma_split[0].lower() == "origin"
                 and l_comma_split[1].lower() == "jasco"
             )
 
-            if condition1 or condition2:
+            condition3 = (
+                l_tab_split[0].lower() == "origin"
+                and l_tab_split[1].lower() == "jasco"
+            )
+
+            if any([condition1, condition2, condition3]):
                 return True
 
     return False
 
 def read_jasco_single_sample_csv(file):
+
     with open(file, encoding="latin-1") as f:
 
         ls = f.read().splitlines()
@@ -294,10 +423,6 @@ def read_jasco_single_sample_csv(file):
             row = l.split(split_str)
             row = [x for x in row if x]
 
-            # replace with dots, if needed
-            if split_str == ";":
-                row = [x.replace(",", ".") for x in row]
-
             # Check if all elements in the row are float values
             if not all([is_float(x) for x in row]):
                 break
@@ -307,10 +432,13 @@ def read_jasco_single_sample_csv(file):
                 break
 
             # Append the wavelength value to the list
-            wavelength.append(float(row[0]))
+            wavelength.append(parse_number(row[0]))
             # Append the CD data for each column to the corresponding list in cdData
             for i3, r in enumerate(row[1:]):
-                cd_data[i3].append(float(r))
+
+                r = parse_number(r)
+
+                cd_data[i3].append(r)
 
         # Convert the lists in cdData to numpy arrays
         cd_data = [np.array(x) for x in cd_data]
@@ -415,6 +543,9 @@ def detect_file_type(file):
     if file_is_jasco_thermal_ramp(file):
         return "jasco_thermal_ramp"
 
+    if file_is_jasco_simple_thermal_ramp(file):
+        return "jasco_simple_thermal_ramp" # only one wavelength. not full spectrum
+
     if file_is_jasco_single_sample_csv(file):
         return "jasco_simple"
 
@@ -423,7 +554,7 @@ def detect_file_type(file):
         ls = f.read().splitlines()
         # Iterate through each line and check if it contains both "Wavelength" and "Temperature"
         for l in ls:
-            if "Wavelength" in l and "Temperature" in l:
+            if "wavelength" in l.lower() and "temperature" in l.lower():
                 return "ChirascanFileTemperatureRamp"  # If both keywords are found, the file is of type 'ChirascanFileTemperatureRamp'
 
     if file_is_chirakit_txt_with_header(file):
@@ -432,52 +563,59 @@ def detect_file_type(file):
     # If the file doesn't match any of the previous cases, open the file and read its lines
     with open(file, encoding="latin-1") as f:
         ls = f.read().splitlines()
+
         # Iterate through each line and check if it contains both "Wavelength" and "Temperature"
         for i, l in enumerate(ls):
 
-            if "Wavelength" in l and "CircularDichroism" in ls[i - 1]:
+            if "wavelength" in l.lower() and "circulardichroism" in ls[i - 1].lower():
                 return "ChirascanFile"  # If both keywords are found, the file is of type 'ChirascanFileTemperatureRamp'
 
     # If none of the previous conditions are met, the file type is 'ChirascanFile'
     return "plain_csv"
 
 def read_custom_csv(file):
+
+    """
+
+    Option A) A csv file with a header, and two or three columns: wavelength, sample name (optional) and the CD signal.
+    The first column must be called 'wavelength'.
+
+    Option B) A csv file with a header and more than three columns: wavelength, CD signal of the first sample , ..., CD signal of the n-th sample.
+    The first column must be called 'wavelength' or 'xydata'.
+
+    """
+
     with open(file, encoding="latin-1") as f:
 
-        ls = f.read().splitlines()[:80]
+        sample = f.read()
 
-        # find if the delimitr could be a comma or a semicolon
-        split_str = find_delimiter_character("".join(ls))
+    # Remove lines starting with '#' and limit to first 200 lines for sniffing
+    lines = sample.splitlines()
+    clean_lines = [l for l in lines if not l.lstrip().startswith("#")]
+    clean_sample = "\n".join(clean_lines[:200]) or sample  # fallback to full sample if nothing left
 
-    # Try comma or semicolon delimiters.
-    df = pd.read_csv(file, comment="#", encoding="latin1", delimiter=split_str)
+    # Find the delimiter
+    try:
+        sniffer = csv.Sniffer()
+        dialect = sniffer.sniff(clean_sample)
+        delimiter = dialect.delimiter
+    except:
+        delimiter = find_delimiter_character(clean_sample)
 
-    # Check if all columns are numeric
-    all_numeric = all(is_numeric_dtype(df[col]) for col in df.columns)
+    df = pd.read_csv(file, comment="#", encoding="latin1",delimiter=delimiter,dtype=str)
 
-    # try changing the decimal to ','
-    if not all_numeric:
-        df = pd.read_csv(
-            file, comment="#", encoding="latin1", delimiter=split_str, decimal=","
-        )
-
-    # If we have only one column, change separator delimiter to spaces
-    if df.shape[1] == 1:
-
-        df = pd.read_csv(file, comment="#", delimiter=r"\s+", encoding="latin1")
-
-        all_numeric = all(df[col].dtype == np.number for col in df.columns)
-
-        # try changing the decimal to ','
-        if not all_numeric:
-            df = pd.read_csv(
-                file, comment="#", encoding="latin1", delimiter=r"\s+", decimal=","
-            )
-
+    # Three columns: wavelength, spectrum name, spectrum value
     if df.shape[1] == 3:
 
+        # Apply parse_number to the first and third columns
+        df[df.columns[0]] =  df[df.columns[0]].apply(parse_number)
+        df[df.columns[2]] =  df[df.columns[2]].apply(parse_number)
+
         df_wide = df.pivot_table(
-            index=df.columns[0], columns=df.columns[1], values=df.columns[2]
+            index=df.columns[0],
+            columns=df.columns[1],
+            values=df.columns[2],
+            sort = False
         ).reset_index()
 
         wavelength = np.array(df_wide.iloc[:, 0])
@@ -488,18 +626,20 @@ def read_custom_csv(file):
 
         file_name = os.path.basename(file)
 
-        wavelength = np.array(df.iloc[:, 0])
+        wavelength = df.iloc[:, 0].apply(parse_number)
+        wavelength = np.array(wavelength)
 
         # We have one CD spectrum
         if len(np.unique(wavelength)) == len(wavelength):
 
-            spectra = np.array(
-                df.iloc[:, 1:], dtype="float"
-            )  # don't use np.array(df.iloc[:,1]) because we need to keep the same dimensions ...
+            signal_values = df.iloc[:, 1].apply(parse_number)
+            signal_values = np.array(signal_values)
+            spectra = signal_values.reshape(-1,1)
+
             spectra_names = np.array([file_name], dtype="str")
 
         # We have the CD signal measured at one (or more) wavelength(s) as a
-        # function of an unkown parameter
+        # function of an unknown parameter
         else:
 
             spectra = []
@@ -508,14 +648,24 @@ def read_custom_csv(file):
             for wl in unique_wls:
                 
                 temp_df = df.iloc[np.where(wavelength == wl)]
-                spectra.append(temp_df.values[:, 1])
+                values  = temp_df.values[:,1]
+                values  = [parse_number(s) for s in values]
+
+                spectra.append(values)
 
             spectra = np.array(spectra, dtype="float")
+
             spectra_names = np.array(
                 [str(i) + " " + file_name for i in range(spectra.shape[1])], dtype="str"
             )
+
             wavelength = unique_wls
+
     else:
+
+        # Apply parse_number to all columns
+        for col in df.columns:
+            df[col] = df[col].apply(parse_number)
 
         wavelength = np.array(df.iloc[:, 0])
         spectra = np.array(df.iloc[:, 1:], dtype="float")
@@ -526,7 +676,9 @@ def read_custom_csv(file):
 
     return wavelength, spectra, spectra_names, signal_ht
 
+
 def read_chirakit_txt_data(file):
+
     df = pd.read_csv(file, comment="#", delimiter=r"\s+", encoding="latin1")
 
     # Find if there is voltage signal
@@ -560,7 +712,7 @@ def read_chirakit_txt_meta_data(file):
     metadata = {}
 
     # Open the file for reading
-    with open(file, encoding="utf-8") as f:
+    with open(file, encoding="latin-1") as f:
         # Read all lines and split them into a list of lines
         ls = f.read().splitlines()
 
@@ -961,7 +1113,7 @@ def read_pccdb_file_meta_data(file):
 
         # Iterate until  the numeric data starts (CD spectra)
         for i, l in enumerate(ls):
-            if "DATA" in l and "Wavelength" in l:
+            if "data" in l.lower() and "wavelength" in l.lower():
                 break
 
             # Extract the key and value from the line
@@ -988,7 +1140,7 @@ def read_chirascan_file_meta_data(cd_file):
         # Find the row index where the numeric data starts (CD spectra)
         for i, l in enumerate(ls):
             # Check if the line contains "Wavelength"
-            if "Wavelength" in l:
+            if "wavelength" in l.lower():
                 # Assuming metadata starts two lines below the line containing "Wavelength"
                 # Get the third row (i+2) and split it by comma to count the number of columns
                 row2 = ls[i + 2].split(",")
@@ -1081,7 +1233,7 @@ def read_chirascan_file_data(cd_file):
         signal["wavelength"] = wavelength
 
         # Group the signal DataFrame by 'wavelength' and calculate the mean for each group
-        aggs = signal.groupby("wavelength")[signal.columns.values].mean()
+        aggs = signal.groupby("wavelength")[signal.columns].mean()
 
         # Extract the mean wavelengths and spectra as numpy arrays
         wavelength = np.array(aggs.iloc[:, -1]).astype("float").flatten()
@@ -1107,7 +1259,7 @@ def read_chirascan_file_data_thermal_ramp(cd_file):
         # Find the row index where the numeric data starts (CD spectra)
         for i, l in enumerate(ls):
             # Check if the line contains "Wavelength"
-            if "Wavelength" in l:
+            if "wavelength" in l.lower():
                 # Assuming metadata starts two lines below the line containing "Wavelength"
                 # Get the third row (i+2) and split it by comma to count the number of columns
                 row2 = ls[i + 2].split(",")
@@ -1166,7 +1318,8 @@ def read_chirascan_file_data_thermal_ramp(cd_file):
         signal["wavelength"] = wavelength
 
         # Group the signal DataFrame by 'wavelength' and calculate the mean for each group
-        aggs = signal.groupby("wavelength")[signal.columns.values].mean()
+
+        aggs = signal.groupby("wavelength")[signal.columns].mean()
 
         # Extract the mean wavelengths and spectra as numpy arrays
         wavelength = np.array(aggs.iloc[:, -1]).astype("float").flatten()
@@ -1178,7 +1331,6 @@ def read_chirascan_file_data_thermal_ramp(cd_file):
 
     # Return the wavelength array, spectra data, and temperature values
     return wavelength, spectra, temperature, signal_ht
-
 
 def read_gen_file_meta_data(file):
     # Initialize an empty dictionary to store metadata
@@ -1291,7 +1443,7 @@ def read_gen_file_data(file):
 def read_unfolding_file_temperature(file):
 
     # Open the file for reading
-    with open(file, encoding="utf-8") as f:
+    with open(file, encoding="latin-1") as f:
         # Read the first n lines and split them into a list of lines
         ls = f.read().splitlines()[:30]
 
@@ -1302,7 +1454,7 @@ def read_unfolding_file_temperature(file):
         for l in info:
             # Split each line into key and value using fixed column positions
 
-            if (':' in l):
+            if ':' in l:
 
                 key   = l.split(':')[0]
                 value = l.split(':')[1]
@@ -1361,7 +1513,6 @@ def read_unfolding_data_monomer(file_path):
         signals_all.append(df_temp[:, 1])
 
     mment_factor_all = np.concatenate(mment_factor_all)
-    #signals          = np.array(signals_all).reshape(len(df.columns), -1)
 
     signal_matrix = np.full((len(wavelength_useful), len(mment_factor_all)), np.nan)
 

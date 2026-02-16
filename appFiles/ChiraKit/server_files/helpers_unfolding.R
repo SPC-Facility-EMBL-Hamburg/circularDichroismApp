@@ -1,17 +1,8 @@
 pandas_to_r <- function(py_df) {
 
-    cols <- py_df$columns$to_list()
+    if (is.null(py_df)) return(NULL)
 
-    # Convert each column properly
-    r_list <- lapply(cols, function(col) {
-        as.vector(py_df[[col]]$to_numpy())
-    })
-
-    # Make data.frame and assign names
-    r_df <- as.data.frame(r_list)
-    names(r_df) <- cols
-
-    return(r_df)
+    return(reticulate::py_to_r(py_df))
 }
 
 # Useful scripts to process the unfolding datasets (thermal and chemical)

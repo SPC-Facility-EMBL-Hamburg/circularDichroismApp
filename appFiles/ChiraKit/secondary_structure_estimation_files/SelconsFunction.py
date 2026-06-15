@@ -290,17 +290,15 @@ def SelconsPy(A,F,q, SStruct_labels = ['Alpha-r','Alpha-d', 'Beta-r', 'Beta-d', 
     #******************SELCON3******************
     #%and finally we carry out application of the helix rule (selcon3)
     sel3_solutions=[] #; 
-    np_param_Sel3=[] #; %SVH 25/9-06
+    np_param_Sel3 =[] #; %SVH 25/9-06
     
     #%************** change these two lines****
-    #%not disordered helix
-    hjh = hj5[0] #hjh = hj5(1);
-    hel = sel2_solutionsMat[0,:] #hel = sel2_solutions(1,:);
-    
-    #%these two lines need to be uncommented if ad (Aplha Disorted) and (Alpha Regular) assignment is used
-    hjh = hj5[0] + hj5[1] #hjh = pred.hj5(1) + pred.hj5(2);
-    hel = sel2_solutionsMat[1,:] + sel2_solutionsMat[0,:] #hel = sel2_solutions(2,:) + sel2_solutions(1,:);
-    
+    # Find the index of the helix component in the SStruct list, and use this to get the corresponding value from hj5 and sel2_solutionsMat
+    ids = [i for i, s in enumerate(SStruct) if 'alpha' in s.lower() or 'helix' in s.lower()] 
+
+    hjh = np.sum(hj5[ids])
+    hel = np.sum(sel2_solutionsMat[ids,:], axis=0) #sel2_solutions(ids,:); %This is the helix component of the selcon2 solutions, which we will use to filter the selcon3 solutions with the helix rule
+
     #%**************************************************************************
     
     hel_max = np.max(hel)  #hel_max = max(hel);

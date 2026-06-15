@@ -406,8 +406,13 @@ class CdExperimentGeneral:
 
         return None
 
-    def set_secondary_structure_method_references_user(self, matrix_f, matrix_a, max_wl_ref, wl_ref_step,
-                                                       ss_struct_labels):
+    def set_secondary_structure_method_references_user(
+            self, 
+            matrix_f, 
+            matrix_a, 
+            max_wl_ref, 
+            wl_ref_step,
+            ss_struct_labels):
 
         """
         Requires:

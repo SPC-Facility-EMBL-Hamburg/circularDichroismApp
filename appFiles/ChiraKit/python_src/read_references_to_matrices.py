@@ -77,3 +77,17 @@ def read_matrix_file(file):
 	df = pd.read_csv(file,sep = sel_delimiter, decimal = decimal_char,header=None)
 
 	return df.to_numpy()
+
+def read_matrix_files(files):
+
+	"""
+	Read several matrix files and concatenate them horizontally.
+	"""
+
+	if isinstance(files, str):
+
+		files = [files]
+
+	matrices = [read_matrix_file(file) for file in files]
+
+	return np.hstack(matrices)

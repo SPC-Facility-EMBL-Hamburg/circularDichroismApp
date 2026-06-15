@@ -3,7 +3,7 @@ observeEvent(input$matrixF,{
   
   req(input$matrixF)
 
-  matrixF <- read_matrix_file(input$matrixF$datapath)
+  matrixF <- read_matrix_files(input$matrixF$datapath)
   
   nrows <- nrow(matrixF)
   
@@ -23,7 +23,7 @@ observeEvent(input$matrixC,{
   
   req(input$matrixC)
   
-  matrixC <- read_matrix_file(input$matrixC$datapath)
+  matrixC <- read_matrix_files(input$matrixC$datapath)
   
   reactives$secStrRefMatrixC <- np_array(matrixC)
   

@@ -296,55 +296,57 @@ def SelconsPy(A,F,q, SStruct_labels = ['Alpha-r','Alpha-d', 'Beta-r', 'Beta-d', 
     # Find the index of the helix component in the SStruct list, and use this to get the corresponding value from hj5 and sel2_solutionsMat
     ids = [i for i, s in enumerate(SStruct) if 'alpha' in s.lower() or 'helix' in s.lower()] 
 
-    hjh = np.sum(hj5[ids])
-    hel = np.sum(sel2_solutionsMat[ids,:], axis=0) #sel2_solutions(ids,:); %This is the helix component of the selcon2 solutions, which we will use to filter the selcon3 solutions with the helix rule
+    if len(ids) > 0:
 
-    #%**************************************************************************
-    
-    hel_max = np.max(hel)  #hel_max = max(hel);
-    hel_min = np.min(hel) #hel_min = min(hel);
-    hel_ave = np.mean(hel) #hel_ave = mean(hel);
-    
-    if (hjh >0.65):
-        for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
-            helix = hel[i]
-            if (helix > 0.65):
-                sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
-                np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+        hjh = np.sum(hj5[ids])
+        hel = np.sum(sel2_solutionsMat[ids,:], axis=0) #sel2_solutions(ids,:); %This is the helix component of the selcon2 solutions, which we will use to filter the selcon3 solutions with the helix rule
+
+        #%**************************************************************************
+        
+        hel_max = np.max(hel)  #hel_max = max(hel);
+        hel_min = np.min(hel) #hel_min = min(hel);
+        hel_ave = np.mean(hel) #hel_ave = mean(hel);
+        
+        if (hjh >0.65):
+            for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
+                helix = hel[i]
+                if (helix > 0.65):
+                    sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
+                    np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+                #end
             #end
         #end
-    #end
-    
-    
-    if (hjh <= 0.65 and hjh >= 0.25):
-        for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
-            helix = hel[i]
-            if (helix <= (((hjh + hel_max)/2)+0.03) and helix >= (((hjh + hel_max)/2)-0.03)):
-                sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
-                np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+        
+        
+        if (hjh <= 0.65 and hjh >= 0.25):
+            for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
+                helix = hel[i]
+                if (helix <= (((hjh + hel_max)/2)+0.03) and helix >= (((hjh + hel_max)/2)-0.03)):
+                    sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
+                    np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+                #end
             #end
         #end
-    #end
-    
-    if (hjh < 0.25 and hjh >= 0.15):
-        for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
-            helix = hel[i]
-            if (helix <= (((hjh + hel_ave)/2)+0.03) and helix >= (((hjh + hel_ave)/2)-0.03)):
-                sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
-                np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+        
+        if (hjh < 0.25 and hjh >= 0.15):
+            for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
+                helix = hel[i]
+                if (helix <= (((hjh + hel_ave)/2)+0.03) and helix >= (((hjh + hel_ave)/2)-0.03)):
+                    sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
+                    np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+                #end
             #end
         #end
-    #end
-    
-    if (hjh < 0.15):
-        for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
-            helix = hel[i]
-            if (helix <= (((hjh + hel_min)/2)+0.03) and helix >= (((hjh + hel_min)/2)-0.03)):
-                sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
-                np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+        
+        if (hjh < 0.15):
+            for i in range(len(sel2_solutions)): #for i=1:size(sel2_solutions,2)
+                helix = hel[i]
+                if (helix <= (((hjh + hel_min)/2)+0.03) and helix >= (((hjh + hel_min)/2)-0.03)):
+                    sel3_solutions.append(sel2_solutions[i]) #sel3_solutions= [sel3_solutions sel2_solutions(:,i);];
+                    np_param_Sel3.append(np_param_Sel2[i]) #np_param_Sel3=[np_param_Sel3 np_param_Sel2(:,i);]; %SVH 25/9-06
+                #end
             #end
         #end
-    #end
     
     refit_np_param = [] #; %SVH 25/9-06
 

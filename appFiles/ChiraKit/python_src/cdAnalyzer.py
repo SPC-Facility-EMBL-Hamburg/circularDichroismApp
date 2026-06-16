@@ -406,8 +406,13 @@ class CdExperimentGeneral:
 
         return None
 
-    def set_secondary_structure_method_references_user(self, matrix_f, matrix_a, max_wl_ref, wl_ref_step,
-                                                       ss_struct_labels):
+    def set_secondary_structure_method_references_user(
+            self, 
+            matrix_f, 
+            matrix_a, 
+            max_wl_ref, 
+            wl_ref_step,
+            ss_struct_labels):
 
         """
         Requires:
@@ -476,8 +481,11 @@ class CdExperimentGeneral:
 
             try:
 
-                return_list, sec_str_df, mean_refit_prot, query_spectrum = SelconsPy(self.A_sel, self.F_sel,
-                                                                                     delta_epsilon, self.SStruct_labels)
+                return_list, sec_str_df, mean_refit_prot, query_spectrum = SelconsPy(
+                    self.A_sel, 
+                    self.F_sel,
+                    delta_epsilon, 
+                    self.SStruct_labels)
 
                 self.secondary_structure_content[j] = sec_str_df
                 self.fitted_spectra_sec_str[self.spectraNames[j]] = mean_refit_prot

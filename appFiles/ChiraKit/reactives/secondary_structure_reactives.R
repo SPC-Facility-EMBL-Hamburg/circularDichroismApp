@@ -3,7 +3,26 @@ observeEvent(input$matrixF,{
   
   req(input$matrixF)
 
-  matrixF <- read_matrix_file(input$matrixF$datapath)
+  files <- input$matrixF$datapath
+  names <- input$matrixF[[1]]
+
+  sorted_indices <- order(names)
+
+  files <- files[sorted_indices]
+  names <- names[sorted_indices]
+
+  # PopUp explaining order of files in case of multiple files
+  
+   if (length(files) > 1) {
+    
+    file_order_message <- paste0("Multiple files detected for matrix F. 
+                                  Please ensure the order of the files is correct. 
+                                  Current order: ", paste(names, collapse = ", "))
+    
+    shinyalert(text = file_order_message, type = "info", closeOnEsc = TRUE, closeOnClickOutside = TRUE, html = TRUE)
+  }
+
+  matrixF <- read_matrix_files(files)
   
   nrows <- nrow(matrixF)
   
@@ -23,7 +42,26 @@ observeEvent(input$matrixC,{
   
   req(input$matrixC)
   
-  matrixC <- read_matrix_file(input$matrixC$datapath)
+  names <- input$matrixC[[1]]
+
+  sorted_indices <- order(names)
+
+  files <- input$matrixC$datapath
+  files <- files[sorted_indices]
+  names <- names[sorted_indices]
+
+  # PopUp explaining order of files in case of multiple files
+  
+   if (length(files) > 1) {
+    
+    file_order_message <- paste0("Multiple files detected for matrix C. 
+                                  Please ensure the order of the files is correct. 
+                                  Current order: ", paste(names, collapse = ", "))
+    
+    shinyalert(text = file_order_message, type = "info", closeOnEsc = TRUE, closeOnClickOutside = TRUE, html = TRUE)
+  }
+
+  matrixC <- read_matrix_files(files)
   
   reactives$secStrRefMatrixC <- np_array(matrixC)
   

@@ -1212,6 +1212,147 @@ The CD spectrum of Myoglobin was published in
 
 </div>
 
+<div class="vf-section-header"><a class="vf-section-header__heading vf-section-header__heading--is-link" href="JavaScript:Void(0);" id="section-link"
+                                  onclick="myFunction('tutorial11')">11) Secondary structure estimation with an antibody reference set
+    <svg aria-hidden="true" class="vf-section-header__icon | vf-icon vf-icon-arrow--inline-end" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0C5.376.008.008 5.376 0 12zm13.707-5.209l4.5 4.5a1 1 0 010 1.414l-4.5 4.5a1 1 0 01-1.414-1.414l2.366-2.367a.25.25 0 00-.177-.424H6a1 1 0 010-2h8.482a.25.25 0 00.177-.427l-2.366-2.368a1 1 0 011.414-1.414z" fill="" fill-rule="nonzero"></path>
+    </svg></a></div>
+
+<div id="tutorial11" style="display:none">
+
+<p class="vf-intro__text">
+    In March 2026, <a href="https://doi.org/10.1007/s00249-026-01828-5" target="_blank" rel="noopener noreferrer">Hoffman, Søren Vrønning <i>et al.</i></a>
+ extended the reference dataset of the Selcon3 algorithm
+    by including the spectra of 14 monoclonal antibodies, creating a new reference dataset
+    called SP-mAb178. This reference dataset can be used to better estimate the percentage of secondary structure elements in monoclonal antibodies.  
+    Below, we provide a Tutorial on how to use this new reference dataset in ChiraKit.
+</p>
+
+<br>
+
+ <ol class="vf-intro__text">
+
+<li class="vf-list__item ">
+
+Download the required files from Zenodo (<a href="https://zenodo.org/records/17053352" target="_blank" rel="noopener noreferrer">https://zenodo.org/records/17053352</a>).
+The zip folder contains a Python GUI programm that can be used as a standalone application
+for secondary structure estimation (<a href="https://doi.org/10.1017/qrd.2025.4" target="_blank" rel="noopener noreferrer">SSCalcpy</a>).
+It has a CC-BY-NC-ND license, which means that it can be used for <b>non-commercial purposes</b> but cannot be modified or distributed without permission.
+The required files for ChiraKit are: <br>
+<br>
+Inside the 'CDRefData_mAb' folder: <br>
+- F14-mAb178-T-Feb25.txt <br>
+- A14-mAb178-Feb25.txt <br>
+</li>
+
+<p class="vf-intro__text">
+    The file 'F14-mAb178-T-Feb25.txt' contains fourteen columns, 
+    each corresspoding the the CD spectrum of a monocolonal antibody, 
+    and six rows, each corresponding to the fraction
+    of a specific secondary structure element 
+    (alpha-helix regular, alpha-helix distorted, beta-sheet regular, beta-sheet distorted, turn, and other).
+    The file 'A14-mAb178-Feb25.txt' contains the spectra of the same fourteen monoclonal antibodies in delta epsilon units.
+</p>
+
+<li class="vf-list__item ">
+    The new antibody reference dataset can be used in ChiraKit 
+    in combination with the AU_SP175 reference dataset.
+    Download the AU_SP175: <a href="AU_SP175_F.csv" download>AU_SP175_F.csv</a>  
+    and <a href="AU_SP175_C.csv" download>AU_SP175_C.csv</a>. 
+</li>
+
+<br>
+
+<li class="vf-list__item ">
+Copy the files into a new folder in your computer and rename them as follows: <br>
+- F14-mAb178-T-Feb25.txt → 1_F14-mAb178-T-Feb25.txt <br>
+- A14-mAb178-Feb25.txt → 1_A14-mAb178-Feb25.txt <br>
+- AU_SP175_F.csv → 2_AU_SP175_F.csv <br>
+- AU_SP175_C.csv → 2_AU_SP175_C.csv <br>   
+
+This step is necessary to import the files in the correct order.
+</li>
+
+<figure class="vf-figure vf-figure--align vf-figure--align-centered">
+<img src="mAb_tutorial_0.png" alt="" width="800" loading="lazy"/>
+</figure>
+<br>
+
+<li class="vf-list__item ">
+An example spectrum is also provided inside the 'TestProteins' folder: <br>
+- mAb1_pH7.txt
+</li>
+
+
+<li class="vf-list__item "> 
+Inside ChiraKit, import the file 'mAb1_pH7.txt' in 'Custom' input mode. 
+Set the 'Input units' and the 'Working units' to 'Mean unit molar extinction'. 
+</li>
+
+<figure class="vf-figure vf-figure--align vf-figure--align-centered">
+<img src="mAb_tutorial_1.png" alt="" width="800" loading="lazy"/>
+</figure>
+<br>
+
+<li class="vf-list__item ">
+Navigate to the '2c. Protein secondary structure' panel
+under the '2. Analysis' section. 
+Deselect the 'Use default reference dataset' option.
+</li>
+
+<li class="vf-list__item ">
+Click on 'Matrix C'
+and import the files
+'1_A14-mAb178-Feb25.txt' and '2_AU_SP175_C.csv'
+</li>
+
+<figure class="vf-figure vf-figure--align vf-figure--align-centered">
+<img src="mAb_tutorial_2.png" alt="" width="500" loading="lazy"/>
+</figure>
+<br>
+
+<figure class="vf-figure vf-figure--align vf-figure--align-centered">
+<img src="mAb_tutorial_3.png" alt="" width="500" loading="lazy"/>
+</figure>
+<br>
+
+<li class="vf-list__item ">
+    Label the 'Secondary structure elements' as follows: <br>
+- Alpha-helix regular <br>
+- Alpha-helix distorted <br>
+- Beta-sheet regular <br>
+- Beta-sheet distorted <br>
+- Turn <br>
+- Other <br>
+</li>
+
+<figure class="vf-figure vf-figure--align vf-figure--align-centered">
+<img src="mAb_tutorial_4.png" alt="" width="200" loading="lazy"/>
+</figure>
+<br>
+
+<li class="vf-list__item ">
+    Press on 'Run estimation'.
+    The estimated percentage of each secondary structure element will be shown under the 'Secondary structure estimation' tab.
+    In this case,
+    there should be 0.3 % Alpha-helix regular,
+     6.0 % Alpha-helix distorted, 
+     31.2 % Beta-sheet regular,
+      16.1 % Beta-sheet distorted, 
+      11.4 % Turns, 
+      and 33.2 % Other.
+      To avoid overinterpretation, we would recommend to join the 'Alpha-helix regular' and 'Alpha-helix distorted' components to obtain the total percentage of alpha-helix, and to do the same for the beta-sheet components.
+</li>
+
+<li class="vf-list__item ">
+    Congratulations! You have successfully estimated the percentage of secondary structure elements in a monoclonal antibody using the new SP-mAb178 reference dataset.
+    If you use this reference dataset, please cite both ChiraKit and the original paper by <a href="https://doi.org/10.1007/s00249-026-01828-5" target="_blank" rel="noopener noreferrer">Hoffman, Søren Vrønning <i>et al. (2026)</i></a>. 
+</li>
+
+ </ol>
+
+</div>
+
 </div>
 </section>
 

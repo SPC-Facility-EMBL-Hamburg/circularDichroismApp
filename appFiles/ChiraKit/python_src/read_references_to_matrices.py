@@ -76,9 +76,11 @@ def read_matrix_file(file):
 
 	df = pd.read_csv(file,sep = sel_delimiter, decimal = decimal_char,header=None)
 
-	return df.to_numpy()
+	matrix = df.to_numpy()
 
-def read_matrix_files(files):
+	return matrix
+
+def read_matrix_files(files,check_rows = True):
 
 	"""
 	Read several matrix files and concatenate them horizontally.
@@ -90,4 +92,16 @@ def read_matrix_files(files):
 
 	matrices = [read_matrix_file(file) for file in files]
 
-	return np.hstack(matrices)
+	if check_rows:
+
+		# Check that all matrices have the same number of rows (wavelengths)
+		rows = [matrix.shape[0] for matrix in matrices]
+		min_rows = np.min(rows)
+		
+		# Cap all matrices to the minimum number of rows to ensure they can be concatenated
+		matrices = [matrix[:min_rows, :] for matrix in matrices]
+
+	matrix = np.concatenate(matrices, axis=1)
+	
+	return matrix
+

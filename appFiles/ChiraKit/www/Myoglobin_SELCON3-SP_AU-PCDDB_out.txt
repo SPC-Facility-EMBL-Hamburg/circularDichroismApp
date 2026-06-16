@@ -1,0 +1,44 @@
+There are 23 Selcon3 solutions
+	 Mean     Std
+AlphaR	52.9 +/- 0.9
+AlphaD	20.1 +/- 0.6
+BetaR	 0.1 +/- 0.4
+BetaD	 0.2 +/- 0.2
+Turns	10.1 +/- 0.6
+Other	17.8 +/- 2.1
+sum =	101.2%
+RMSD between Query and Refitted spectra 0.0258
+ 
+Output for Nyk:
+AlphaR	AlphaD	BetaR	BetaD	Turns	Other	Sum	AR Dev	AD Dev	BR Dev	BD Dev	T Dev	Ot Dev	selcon?	#solu	RMSD
+52.9	20.1	 0.1	 0.2	10.1	17.8	101.2	 0.9	 0.6	 0.4	 0.2	 0.6	 2.1	Selcon3	23	0.0258	SP_AU-PCDDB	Myoglobin.csv	
+
+****** Which proteins used for the calculation? ******
+Max Np 25
+Proteins used in solution in RMSD order:
+46: Myoglobin
+47: Myoglobin(whale)
+11: C-Phycocyanin
+36: Hemoglobin
+37: Serum Albumin
+43: Leptin
+18: Citrate Synthase
+33: Glutamate Dehydrogenase
+12: Calmodulin
+0: Aldolase
+34: Glycogen Phosphorylase-b
+27: Dehyroquinase-type1
+2: alpha-amylase
+69: Triose Phosphate Isomerase
+28: DHQase-type2
+57: Phosphoglycerate Kinase
+35: Haloalkane Dehalogenase
+58: Phospholipase
+60: Pyruvate Kinase
+56: Phosphoglucomutase
+49: Ovalbumin
+39: Insulin
+50: Ovotransferrin
+55: Peroxidase
+32: Glucose Oxidase
+

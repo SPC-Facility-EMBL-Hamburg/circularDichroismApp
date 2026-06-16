@@ -227,7 +227,11 @@ box(title = "1. Settings", width = 12, solidHeader = T, status = "primary",
                        
         column(4, p(HTML("<b>a) Matrix C</b>"),
                     span(shiny::icon("info-circle"), id = "info_uu_matrixC"),
-                    fileInput("matrixC", NULL,accept = c('.txt','.csv','.dat')),
+                    fileInput(
+                      "matrixC", 
+                      NULL,
+                      accept = c('.txt','.csv','.dat'),
+                      multiple = TRUE),
                     tippy::tippy_this(
                       elementId = "info_uu_matrixC",
                       tooltip = "m × n matrix containing the CD spectra in 
@@ -237,7 +241,11 @@ box(title = "1. Settings", width = 12, solidHeader = T, status = "primary",
         
         column(4, p(HTML("<b>b) Matrix F</b>"),
                     span(shiny::icon("info-circle"), id = "info_uu_matrixF"),
-                    fileInput("matrixF", NULL,accept = c('.txt','.csv','.dat')),
+                    fileInput(
+                      "matrixF",
+                       NULL,
+                       accept = c('.txt','.csv','.dat'),
+                       multiple = TRUE),
                     tippy::tippy_this(
                       elementId = "info_uu_matrixF",
                       tooltip = "l × n matrix containing the fractions of the secondary 
